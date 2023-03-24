@@ -132,51 +132,66 @@ function addEmployee() {
     if (error) throw error;
 
     const availableRoles = response.map(({ id, title, salary }) => ({
-      value: id, title: `${title}`, salary: `${salary}`
+      value: id, name: `${title}`
     }));
 
-    inquirer
-      .prompt([
-        {
-          type: "input",
-          name: "firstName",
-          message: "Enter the employee's first name:"
-        },
-        {
-          type: "input",
-          name: "lastName",
-          message: "Enter the employee's last name:"
-        },
-        {
-          type: "list",
-          name: "selectedRole",
-          message: "Choose the employee's role:",
-          choices: availableRoles
-        },
-      ])
-      .then(function (answer) {
-        console.log(answer);
+    connection.query("SELECT * FROM employee", function (error, employees) {
+      if (error) throw error;
 
-        var insertQuery = `INSERT INTO employee SET ?`;
+      const managerOptions = employees.map(({ id, first_name, last_name }) => ({
+        value: id, name: `${first_name} ${last_name}`
+      }));
 
-        connection.query(insertQuery,
+      managerOptions.unshift({ value: null, name: 'None' });
+
+      inquirer
+        .prompt([
           {
-            first_name: answer.firstName,
-            last_name: answer.lastName,
-            role_id: answer.selectedRole,
-            manager_id: answer.managerId,
+            type: "input",
+            name: "firstName",
+            message: "Enter the employee's first name:"
           },
-          function (error, response) {
-            if (error) throw error;
+          {
+            type: "input",
+            name: "lastName",
+            message: "Enter the employee's last name:"
+          },
+          {
+            type: "list",
+            name: "selectedRole",
+            message: "Choose the employee's role:",
+            choices: availableRoles
+          },
+          {
+            type: "list",
+            name: "managerId",
+            message: "Choose the employee's manager:",
+            choices: managerOptions
+          },
+        ])
+        .then(function (answer) {
 
-            console.table(response);
-            console.log(response.insertedRows + "Employee added successfully!\n");
+          var insertQuery = `INSERT INTO employee SET ?`;
 
-            mainQuestions();
-          });
-      });
+          connection.query(insertQuery,
+            {
+              first_name: answer.firstName,
+              last_name: answer.lastName,
+              role_id: answer.selectedRole,
+              manager_id: answer.managerId,
+            },
+            function (error, response) {
+              if (error) throw error;
+
+              console.log("Employee added to the database successfully!\n");
+
+              mainQuestions();
+            });
+        });
+    });
   });
 }
+
 
 // 3. Update employee's role
 function updateEmployeeRole() {
@@ -256,75 +271,59 @@ function viewAllRoles() {
 };
 
 //5. Add a role
-function addEmployee() {
-  console.log("Adding a new employee!");
+function addRole() {
+  connection.query("SELECT * FROM department", function (err, departments) {
+    if (err) {
+      console.error("An error occurred while fetching departments:", err);
+      return;
+    }
 
-  var queryRoles =
-    `SELECT r.id, r.title, r.salary 
-      FROM role r`;
+    const departmentNames = departments.map((department) => department.name);
 
-  connection.query(queryRoles, function (error, response) {
-    if (error) throw error;
+    inquirer
+      .prompt([
+        {
+          name: "title",
+          type: "input",
+          message: "Enter the name of the new role:",
+        },
+        {
+          name: "salary",
+          type: "number",
+          message: "Enter the salary for the new role:",
+        },
+        {
+          name: "department",
+          type: "list",
+          message: "Choose the department for the new role:",
+          choices: departmentNames,
+        },
+      ])
+      .then(function (roleDetails) {
+        const selectedDepartment = departments.find(
+          (department) => department.name === roleDetails.department
+        );
 
-    const availableRoles = response.map(({ id, title}) => ({
-      value: id, name: `${title}`
-    }));
-
-    connection.query("SELECT * FROM employee", function (error, employees) {
-      if (error) throw error;
-
-      const managerOptions = employees.map(({ id, first_name, last_name }) => ({
-        value: id, name: `${first_name} ${last_name}`
-      }));
-
-      managerOptions.unshift({ value: null, name: 'None' });
-
-      inquirer
-        .prompt([
+        connection.query(
+          "INSERT INTO role SET ?",
           {
-            type: "input",
-            name: "firstName",
-            message: "Enter the employee's first name:"
+            title: roleDetails.title,
+            salary: roleDetails.salary,
+            department_id: selectedDepartment.id,
           },
-          {
-            type: "input",
-            name: "lastName",
-            message: "Enter the employee's last name:"
-          },
-          {
-            type: "list",
-            name: "selectedRole",
-            message: "Choose the employee's role:",
-            choices: availableRoles
-          },
-          {
-            type: "list",
-            name: "managerId",
-            message: "Choose the employee's manager:",
-            choices: managerOptions
-          },
-        ])
-        .then(function (answer) {
-          console.log(answer);
-
-          var insertQuery = `INSERT INTO employee SET ?`;
-
-          connection.query(insertQuery,
-            {
-              first_name: answer.firstName,
-              last_name: answer.lastName,
-              role_id: answer.selectedRole,
-              manager_id: answer.managerId,
-            },
-            function (error, response) {
-              if (error) throw error;
-
-              console.log("Added to the database successfully!\n");
-
-              mainQuestions();
-            });
-        });
-    });
+          function (err) {
+            if (err) {
+              console.error("An error occurred while creating the role:", err);
+              return;
+            }
+            console.log(`New role ${roleDetails.title} has been added successfully!`);
+            mainQuestions();
+          }
+        );
+      })
+      .catch(function (err) {
+        console.error("An error occurred during the inquirer prompt:", err);
+      });
   });
 }
 

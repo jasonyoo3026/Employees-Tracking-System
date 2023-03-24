@@ -1,15 +1,18 @@
-# 12 SQL: Employee Tracker
+# MySQL: Employee Tracker
 
 ## Introduction
 
 This program was designed to build a command-line application to manage a company's employee database, using Node.js, Inquirer, and MySQL. The inspiration to build this program was that developers are required to create interfaces that allow non-developers to view and interact with information stored in databases and these interfaces are referred as content management systems (CMS)
 
-## Download
+## Installation
 
 In order to run this program, the users will be required to use the `Inquirer` package, ensure that you install and use Inquirer version 8.2.4. To do so, use the following command in your project folder: `npm i inquirer@8.2.4`.
 
 Also the users need to use the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to your MySQL database and perform queries, the [Inquirer package](https://www.npmjs.com/package/inquirer/v/8.2.4) to interact with the user via the command line, and the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
 
+To create a database, please run schema.sql and seeds.sql in the "db" directory.
+`source schema.sql`
+`source seeds.sql`
 
 ## User Story
 
@@ -43,8 +46,6 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 ## Mock-Up
 
-The following video shows an example of the application being used from the command line:
-
-[![A video thumbnail shows the command-line employee management application with a play button overlaying the view.](./Assets/12-sql-homework-video-thumbnail.png)](https://2u-20.wistia.com/medias/2lnle7xnpk)
+The following video shows an example of the application being used from the command line: A link will be shown in here.
 
 
