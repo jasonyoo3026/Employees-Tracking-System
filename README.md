@@ -11,9 +11,12 @@ In order to run this program, the users will be required to use the `Inquirer` p
 Also the users need to use the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to your MySQL database and perform queries, the [Inquirer package](https://www.npmjs.com/package/inquirer/v/8.2.4) to interact with the user via the command line, and the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
 
 To create a database, please run schema.sql and seeds.sql in the "db" directory.
-`source schema.sql`
-`source seeds.sql`
+```
+source schema.sql
 
+source seeds.sql
+
+```
 ## User Story
 
 ```md
@@ -46,6 +49,5 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 ## Mock-Up
 
-The following video shows an example of the application being used from the command line: A link will be shown in here.
-
+The following video shows an example of the application being used from the command line: https://drive.google.com/file/d/1jZ6JzwJn8b8uZr0gzeHM_ny-GSzsqRLl/view
 
